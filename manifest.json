@@ -1,0 +1,25 @@
+{
+  "name": "Devtools Workbench",
+  "description": "Build an Extension!",
+  "version": "1.0",
+  "manifest_version": 3,
+  "devtools_page": "devtools.html",
+  "background": {
+    "service_worker": "service_worker.js"
+  },
+  "content_scripts": [
+    {
+      "run_at": "document_start",
+      "js": ["content/content_script.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "permissions": ["background", "scripting"],
+  "host_permissions": ["<all_urls>"],
+  "web_accessible_resources": [
+    {
+      "resources": ["content/inject_script.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
