@@ -6,21 +6,32 @@
     <button>Click me!</button>
 
     <script defer>
-      document.addEventListener(
-        "DOMContentLoaded",
-        () => {
-          console.log("XXay4X", Date.now());
-
-          window.bonk`
-            <style>button { background: #34a; color: #fff; }</style>
-            <ul>
-            <li><button @click=${clickHandler}>Add debug message</button></li>
-            <li><button @click=${click2}>Updatre local storage</button></li>
-            `;
+      const features = [
+        {
+          name: "Feature 1",
+          enabled: true,
         },
+        {
+          name: "Feature 2",
+          enabled: false,
+        },
+        {
+          name: "Feature 3",
+          enabled: true,
+        },
+      ];
 
-        false
-      );
+      setTimeout(() => {
+        bonk`
+              <style>button { background: #34a; color: #fff; }</style>
+              <ul>
+              <li><button @click=${clickHandler}>Add debug message</button></li>
+              <li><button @click=${click2}>Updatre local storage</button></li></ul>
+
+                ${features.map((item) => bonk.html`<li>${item.name}</li>`)}
+              
+              `;
+      }, 100);
 
       function clickHandler() {
         document.querySelector(".shoulder").innerHTML +=
@@ -39,11 +50,11 @@
 
       document.querySelector("button").addEventListener("click", () => {
         window.bonk`
-            <style>button { background: #34a; color: #fff; }</style>
-            <ul>
-            <li><button @click=${clickHandler}>Add debug message</button></li>
-            <li><button @click=${click2}>Updatre local storage</button></li>
-            `;
+              <style>button { background: #aa2; color: #fff; }</style>
+              <ul>
+              <li><button @click=${clickHandler}>Add debug message</button></li>
+              <li><button @click=${click2}>Updatre local storage</button></li>
+              `;
       });
     </script>
     <div class="shoulder" style="padding: 1em; border: 1px dashed #333"></div>

@@ -6,11 +6,11 @@ function injectScript(path) {
   };
   (document.head || document.documentElement).appendChild(s);
 }
-console.log("afds", Date.now());
+
 injectScript("content/inject_script.js");
 
 window.addEventListener("message", (event) => {
-  console.log("🐕🐕🐕🐕🐕🐕event", event);
+  // Messages from page
   if (
     event.data?.type == "FROM_INJECTED_SCRIPT" &&
     typeof chrome.app.isInstalled !== "undefined"
@@ -20,11 +20,8 @@ window.addEventListener("message", (event) => {
 });
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  console.log(
-    sender.tab
-      ? "from a content script:" + sender.tab.url
-      : "from the extension"
-  );
-
-  window.postMessage(message);
+  // If message is from extension, forward it to injected script
+  if (!sender.tab) {
+    window.postMessage(message);
+  }
 });

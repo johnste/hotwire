@@ -15,7 +15,12 @@ backgroundPageConnection.onMessage.addListener((message) => {
 
   const text = message.item[0];
   const expressions = message.item[1].map((exp) => {
-    if (typeof exp === "object" && exp?.type == "function") {
+    console.log("another middle aged rule", exp);
+    if (
+      !Array.isArray(exp) &&
+      typeof exp === "object" &&
+      exp?.type == "function"
+    ) {
       return function (event) {
         backgroundPageConnection.postMessage({
           type: "invocation",
@@ -23,6 +28,19 @@ backgroundPageConnection.onMessage.addListener((message) => {
           tabId: message.tabId,
         });
       };
+    } else if (
+      !Array.isArray(exp) &&
+      typeof x === "object" &&
+      x?.type == "html"
+    ) {
+      return html(exp.text, ...exp.expressions);
+    } else if (Array.isArray(exp)) {
+      return exp.map((x) => {
+        if (typeof x === "object" && x?.type == "html") {
+          return html(x.text, ...x.expressions);
+        }
+        return x;
+      });
     }
     return exp;
   });

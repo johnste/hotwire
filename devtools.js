@@ -4,7 +4,6 @@ chrome.devtools.panels.create(
   "panel/panel.html",
   function (panel) {
     // code invoked on panel creation
-    console.log("devtools.js Panel created");
   }
 );
 
