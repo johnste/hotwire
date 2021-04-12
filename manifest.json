@@ -2,10 +2,10 @@
   "name": "Hotwire",
   "description": "Build an Extension!",
   "version": "1.0",
-  "manifest_version": 3,
+  "manifest_version": 2,
   "devtools_page": "devtools.html",
   "background": {
-    "service_worker": "service_worker.js"
+    "scripts": ["background.js"]
   },
   "content_scripts": [
     {
@@ -14,12 +14,5 @@
       "matches": ["<all_urls>"]
     }
   ],
-  "permissions": ["background", "scripting"],
-  "host_permissions": ["<all_urls>"],
-  "web_accessible_resources": [
-    {
-      "resources": ["content/inject_script.js"],
-      "matches": ["<all_urls>"]
-    }
-  ]
+  "web_accessible_resources": ["content/inject_script.js"]
 }
