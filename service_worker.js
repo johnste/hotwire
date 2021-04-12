@@ -1,74 +1,65 @@
-listen("devtools", {
-  callback(message) {
-    if (message.type !== "inject" || !message.tabId) {
-      return;
-    }
-
-    chrome.scripting.executeScript({
-      target: { tabId: message.tabId },
-      files: [message.scriptToInject],
-    });
-  },
-});
-
-var connections = {};
 let messageListener;
 
+// Keep the latest sent message around before the panel has been created
+let initialMessage = undefined;
+const premountListener = createListener((message) => {
+  console.log(new Date().toTimeString(), "HW⚡️ service_worker premount message", message);
+  initialMessage = message;
+});
+chrome.runtime.onMessage.addListener(premountListener);
+
+// Listen to events from devtool panel
 listen("panel", {
-  callback(message, panel) {
+  onMessage(message, panel) {
     switch (message.type) {
       case "init":
-        connections[message.tabId] = panel;
-
         if (initialMessage) {
           panel.postMessage(initialMessage);
         }
 
-        chrome.runtime.onMessage.removeListener(premature);
-
-        messageListener = onMessage((message) => {
+        messageListener = createListener((message) => {
+          console.log(new Date().toTimeString(), "HW⚡️ service_worker premount message", message);
           return panel.postMessage(message);
         });
+
+        chrome.runtime.onMessage.removeListener(premountListener);
+        chrome.runtime.onMessage.addListener(messageListener);
         break;
+
       case "invocation":
-        console.log("invocatrion!", message);
+        // Function was invoked in panel
         chrome.tabs.sendMessage(message.tabId, message);
+        break;
     }
   },
-  disconnect() {
+  onDisconnect() {
+    console.log(new Date().toTimeString(), "HW⚡️ service_worker disconnect panel");
     chrome.runtime.onMessage.removeListener(messageListener);
   },
 });
 
-let initialMessage = undefined;
-const premature = onMessage((message) => {
-  initialMessage = message;
-});
-
 // Listen util
-function listen(source, { callback, disconnect, connect, debug } = {}) {
+function listen(source, { onMessage, onDisconnect, onConnect } = {}) {
   try {
-    console.log("⚡️" + source);
     chrome.runtime.onConnect.addListener(function (port) {
       if (port.name !== source) {
         return;
       }
-
-      if (debug) console.log(`✅ connect to ${source}`);
-      connect?.(port);
+      console.log(new Date().toTimeString(), "HW⚡️ service_worker on connect");
+      onConnect?.(port);
 
       // assign the listener function to a variable so we can remove it later
       var listener = function (message, sender, sendResponse) {
-        if (debug) console.log(`💌 from ${source}`, message);
-        callback(message, port);
+        console.log(new Date().toTimeString(), "HW⚡️ service_worker message from panel", message);
+        onMessage?.(message, port);
       };
 
       // add the listener
       port.onMessage.addListener(listener);
 
       port.onDisconnect.addListener(function () {
-        if (debug) console.log(`💔 from ${source}`);
-        disconnect?.();
+        console.log(new Date().toTimeString(), "HW⚡️ service_worker on disconnect");
+        onDisconnect?.();
         port.onMessage.removeListener(listener);
       });
     });
@@ -78,9 +69,14 @@ function listen(source, { callback, disconnect, connect, debug } = {}) {
 }
 
 // Other listen
-function onMessage(callback) {
+function createListener(callback) {
   function listener(message, sender, sendResponse) {
-    console.log("onMessage!", message);
+    console.log(
+      new Date().toTimeString(),
+      "HW⚡️ service_worker message from content_script",
+      message
+    );
+
     if (message.type !== "render") {
       return;
     }
@@ -91,6 +87,6 @@ function onMessage(callback) {
       response: "Message received",
     });
   }
-  chrome.runtime.onMessage.addListener(listener);
+
   return listener;
 }

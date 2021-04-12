@@ -1,0 +1,14 @@
+{
+  "name": "test-page",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "start": "serve ."
+  },
+  "dependencies": {
+    "skruv": "^0.2.4"
+  },
+  "devDependencies": {
+    "serve": "^11.3.2"
+  }
+}

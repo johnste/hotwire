@@ -1,25 +1,18 @@
 <html>
   <style>
-    * {
-      border-radius: 5px;
-    }
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #202b38;
+      }
 
-    html {
-      background: #212123;
-      color: #bdc4cd;
-      padding: 1em;
-      margin: 0;
-      font-size: 16px;
-    }
-
-    .error {
-      border: 1px dotted #bdc4cd;
+      body,
+      a {
+        color: #dbdbdb;
+      }
     }
   </style>
   <script type="module" src="panel.js"></script>
   <body>
-    <main>Call <code>bonk`&lt;button&gt;Click me!&lt;/button&gt;</code></main>
-
-    <pre class="error"></pre>
+    <main>Call <code>hotwire('Name')`&lt;button&gt;Click me!&lt;/button&gt;`</code></main>
   </body>
 </html>
